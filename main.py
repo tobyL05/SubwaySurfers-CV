@@ -86,8 +86,8 @@ class VideoStream(Observable):
     def drawLines(self, frame, w, h):
         cv2.line(frame, (0,int(h/2 - 20)),(w,int(h/2 - 20)),(255,255,255),2) 
         cv2.line(frame, (0,int(h/2 + 100)),(w,int(h/2 + 100)),(255,255,255),2) 
-        cv2.line(frame,(int(w/2 - 100),0),(int(w/2 - 100),h),(255,255,255),2)
-        cv2.line(frame,(int(w/2 + 100),0),(int(w/2 + 100),h),(255,255,255),2)
+        cv2.line(frame,(int(w/2 - 200),0),(int(w/2 - 200),h),(255,255,255),2)
+        cv2.line(frame,(int(w/2 + 200),0),(int(w/2 + 200),h),(255,255,255),2)
 
     def movenet(self,input_image):
         """Runs detection on an input image.
@@ -137,9 +137,9 @@ class VideoStream(Observable):
 
         self.pos = ""
         self.state = ""
-        if x >= (width/2 + 100):
+        if x >= (width/2 + 200):
             self.pos = "right"
-        elif x <= (width/2 - 100):
+        elif x <= (width/2 - 200):
             self.pos = "left"
         else:
             self.pos = "middle"
@@ -195,4 +195,3 @@ class Game(Observer):
 
 if __name__ == "__main__":
     VideoStream().start()
-    Game()
