@@ -97,10 +97,10 @@ class VideoStream(Observable):
         """
         width, height = new_sizes
         scale = min(height / float(size[1]), width / float(size[0]))
-        Mat = np.float32([[scale, 0, 0], [0, scale, 0]])
-        Mat[0][2] = (width - scale * size[0]) / 2
-        Mat[1][2] = (height - scale * size[1]) / 2
-        return Mat
+        mat = np.float32([[scale, 0, 0], [0, scale, 0]])
+        mat[0][2] = (width - scale * size[0]) / 2
+        mat[1][2] = (height - scale * size[1]) / 2
+        return mat
 
     def draw_lines(self, frame, w, h):
         """
@@ -170,7 +170,7 @@ class VideoStream(Observable):
             self.state = "slide"
         else:
             self.state = "run"
-        
+
         self.notify_observers()
 
 class Game(Observer):
