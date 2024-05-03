@@ -13,7 +13,7 @@ class Observable:
 
     def add_observer(self, obs: Type['Observer']):
         """
-        Adds an observer to the list of observers 
+        Adds an observer to the list of observers
         """
         self.observers.append(obs)
 
@@ -26,13 +26,14 @@ class Observable:
 
 class Observer:
     """Represents an Abstract Observer class"""
+    def __init__(self):
+        pass
 
     @abstractmethod
     def update(self, obs: Observable):
         """
-        Updates the observer based on Observable's state 
+        Updates the observer based on Observable's state
         """
-        pass
 
 class VideoStream(Observable):
     """Handles Webcam feed and pose detection."""
@@ -65,33 +66,33 @@ class VideoStream(Observable):
             input_details = self.interpreter.get_input_details()
             output_details = self.interpreter.get_output_details()
 
-            # Make predictions 
+            # Make predictions
             self.interpreter.set_tensor(input_details[0]['index'], np.array(input_image))
             self.interpreter.invoke()
             keypoints_with_scores = self.interpreter.get_tensor(output_details[0]['index'])[0, 0]
 
             orig_w, orig_h = frame.shape[:2]
-            Mat = self.get_affine_transform_to_fixed_sizes_with_padding((orig_w, orig_h), (192, 192))
+            mat = self.get_affine_transform((orig_w, orig_h), (192, 192))
             # M has shape 2x3 but we need square matrix when finding an inverse
-            Mat = np.vstack((Mat, [0, 0, 1]))
-            M_inv = np.linalg.inv(Mat)[:2]
+            mat = np.vstack((mat, [0, 0, 1]))
+            m_inv = np.linalg.inv(mat)[:2]
             xy_keypoints = keypoints_with_scores[:, :2] * 192
-            xy_keypoints = cv2.transform(np.array([xy_keypoints]), M_inv)[0]
+            xy_keypoints = cv2.transform(np.array([xy_keypoints]), m_inv)[0]
             keypoints_with_scores = np.hstack((xy_keypoints, keypoints_with_scores[:, 2:]))
 
             self.handle_keypoints(frame, keypoints_with_scores, 0.4)
 
             cv2.imshow('MoveNet Lightning', frame)
-    
+
             if cv2.waitKey(10) & 0xFF==ord('q'):
                 break
         
         self.vid.release()
         cv2.destroyAllWindows()
 
-    def get_affine_transform_to_fixed_sizes_with_padding(self,size, new_sizes):
+    def get_affine_transform(self,size, new_sizes):
         """
-        Convert model output back to actual coordinates 
+        Convert model output back to actual coordinates
         for accurate keypoint drawing.
         """
         width, height = new_sizes
@@ -103,9 +104,9 @@ class VideoStream(Observable):
 
     def draw_lines(self, frame, w, h):
         """
-        Draw border lines on webcam output 
+        Draw border lines on webcam output
         """
-        cv2.line(frame, (0,int(h/2 - 20)),(w,int(h/2 - 20)),(255,255,255),2) 
+        cv2.line(frame, (0,int(h/2 - 20)),(w,int(h/2 - 20)),(255,255,255),2)
         cv2.line(frame, (0,int(h/2 + 100)),(w,int(h/2 + 100)),(255,255,255),2)
         cv2.line(frame,(int(w/2 - 200),0),(int(w/2 - 200),h),(255,255,255),2)
         cv2.line(frame,(int(w/2 + 200),0),(int(w/2 + 200),h),(255,255,255),2)
@@ -134,7 +135,7 @@ class VideoStream(Observable):
 
     def handle_keypoints(self,frame, keypoints, confidence_threshold):
         """
-        Draw each keypoint and calculate the position 
+        Draw each keypoint and calculate the position
         """
         h, w, _ = frame.shape
     
@@ -154,7 +155,7 @@ class VideoStream(Observable):
     
     def calculate_pos(self, width, height, x, y): 
         """
-        Determines player's new position and state given current x,y position. 
+        Determines player's new position and state given current x,y position.
         """
         if x >= (width/2 + 200):
             self.pos = "right"
@@ -177,7 +178,7 @@ class Game(Observer):
 
     def __init__(self):
         """
-        Constructor opens the game in a new default browser window 
+        Constructor opens the game in a new default browser window
         """
         super()
         self.current_pos = "middle"
@@ -205,7 +206,7 @@ class Game(Observer):
         match new_pos:
             case "middle":
                 if prev_pos == "left":
-                    pyautogui.press("right") 
+                    pyautogui.press("right")
                 elif prev_pos == "right":
                     pyautogui.press("left")
             case "left":
