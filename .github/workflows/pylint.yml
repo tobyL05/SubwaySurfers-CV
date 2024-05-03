@@ -21,5 +21,5 @@ jobs:
         pip install -r requirements.txt
     - name: Analysing the code with pylint
       run: |
-        pylint $(git ls-files '*.py') --output=lint.txt
+        pylint $(git ls-files '*.py') 
 
