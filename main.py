@@ -5,7 +5,7 @@ from typing import Type, List
 import webbrowser as wb
 import tensorflow as tf
 import numpy as np
-import cv2
+from cv2 import cv2
 import pyautogui
 
 class Observable:
@@ -86,7 +86,7 @@ class VideoStream(Observable):
 
             if cv2.waitKey(10) & 0xFF==ord('q'):
                 break
-        
+
         self.vid.release()
         cv2.destroyAllWindows()
 
@@ -138,7 +138,7 @@ class VideoStream(Observable):
         Draw each keypoint and calculate the position
         """
         h, w, _ = frame.shape
-    
+
         sumx = 0
         sumy = 0
         for keypoint in keypoints[5:7]:
@@ -152,8 +152,8 @@ class VideoStream(Observable):
 
         cv2.circle(frame,(int(x_mid),int(y_mid)),20, (0,255,0),-1) # midpoint
         self.calculate_pos(w, h, x_mid,y_mid)
-    
-    def calculate_pos(self, width, height, x, y): 
+
+    def calculate_pos(self, width, height, x, y):
         """
         Determines player's new position and state given current x,y position.
         """
